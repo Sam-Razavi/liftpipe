@@ -7,3 +7,16 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+# Data: real personal exports must never be committed
+data/real/
+data/synthetic/
+data/warehouse/
+data/raw/
+*.duckdb
+*.duckdb.wal
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
