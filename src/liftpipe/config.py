@@ -38,14 +38,21 @@ class Settings:
         return self.data_dir / "warehouse" / f"liftpipe_{self.source}.duckdb"
 
     @property
-    def hevy_csv(self) -> Path:
-        return self.input_dir / "workouts.csv"
+    def hevy_dir(self) -> Path:
+        return self.input_dir / "hevy"
 
     @property
-    def apple_health_export(self) -> Path:
-        """Apple Health export; ``export.zip`` is preferred over a bare ``export.xml``."""
-        zipped = self.input_dir / "export.zip"
-        return zipped if zipped.exists() else self.input_dir / "export.xml"
+    def apple_health_dir(self) -> Path:
+        return self.input_dir / "apple_health"
+
+    def hevy_files(self) -> list[Path]:
+        """All Hevy CSV exports, oldest first (exports are full-history snapshots)."""
+        return sorted(self.hevy_dir.glob("*.csv"))
+
+    def apple_health_files(self) -> list[Path]:
+        """All Apple Health exports (``.zip`` or bare ``.xml``), oldest first."""
+        files = [*self.apple_health_dir.glob("*.zip"), *self.apple_health_dir.glob("*.xml")]
+        return sorted(files)
 
 
 def get_settings() -> Settings:

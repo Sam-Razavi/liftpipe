@@ -7,4 +7,4 @@
 | `raw/` | Parquet batches written by ingestion | No |
 | `warehouse/` | DuckDB database file | No |
 
-To run on your own data, place `workouts.csv` (Hevy export) and `export.zip` (Apple Health export) in `data/real/` and run `make real`.
+To run on your own data, place Hevy CSV exports in `data/real/hevy/` and Apple Health `export.zip` files in `data/real/apple_health/`, then run `make real`. Several exports may sit side by side; overlapping history is de-duplicated on load.
