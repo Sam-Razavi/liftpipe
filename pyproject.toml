@@ -5,7 +5,10 @@ description = "Fitness data pipeline: Hevy and Apple Health exports to DuckDB ma
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 authors = [{ name = "Sam Sahbaei Razavi", email = "h24sasah@du.se" }]
-dependencies = []
+dependencies = [
+    "faker>=40.43.0",
+    "numpy>=2.5.4",
+]
 
 [build-system]
 requires = ["hatchling"]
