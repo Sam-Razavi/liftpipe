@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 
-.PHONY: help setup lint format test
+.PHONY: help setup lint format test synthetic
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -19,3 +19,6 @@ format: ## Auto-format and fix lint issues
 
 test: ## Run the Python test suite
 	$(UV) run pytest
+
+synthetic: ## Generate synthetic Hevy and Apple Health exports into data/synthetic
+	$(UV) run python -m liftpipe.synthetic --out data
