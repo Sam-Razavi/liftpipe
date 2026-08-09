@@ -7,6 +7,7 @@ requires-python = ">=3.12,<3.13"
 authors = [{ name = "Sam Sahbaei Razavi", email = "h24sasah@du.se" }]
 dependencies = [
     "faker>=40.43.0",
+    "lxml>=6.1.3",
     "numpy>=2.5.4",
 ]
 
