@@ -94,3 +94,15 @@ def test_apple_export_is_well_formed(tmp_path) -> None:
     assert root.find("Workout") is not None
     # Summer and winter dates carry their own UTC offsets.
     assert all(r.get("startDate")[-5:] in {"+0100", "+0200"} for r in root.iter("Record"))
+
+
+def test_apple_snapshots_share_history(tmp_path) -> None:
+    generate(tmp_path, seed=1, weeks=8, noise_per_day=1)
+    older, newer = sorted(tmp_path.glob("synthetic/apple_health/*.zip"))
+
+    def elements(path):
+        with zipfile.ZipFile(path) as zf, zf.open(ZIP_MEMBER) as fh:
+            root = etree.parse(fh).getroot()
+        return {etree.tostring(e, with_tail=False) for e in root if e.tag in ("Record", "Workout")}
+
+    assert elements(older) <= elements(newer)

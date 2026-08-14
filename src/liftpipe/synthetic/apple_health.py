@@ -75,19 +75,23 @@ def _el(tag: str, attrs: dict[str, object], children: list[str] | None = None) -
     return f" <{tag} {rendered}>\n{inner} </{tag}>\n"
 
 
+# Trends are defined over a fixed horizon, not the export length, so a later export
+# reproduces earlier history exactly (as a real re-export would).
+HORIZON_DAYS = 548
+
+
 class _Body:
     """Slow recomposition: weight drifts down slightly while body fat falls."""
 
-    def __init__(self, rng: np.random.Generator, n_days: int) -> None:
+    def __init__(self, rng: np.random.Generator) -> None:
         self.rng = rng
-        self.n_days = n_days
 
     def weight(self, day: int) -> float:
-        trend = 84.0 - 3.5 * day / self.n_days + 0.8 * np.sin(day / 58)
+        trend = 84.0 - 3.5 * day / HORIZON_DAYS + 0.8 * np.sin(day / 58)
         return round(float(trend + self.rng.normal(0, 0.45)), 1)
 
     def body_fat(self, day: int) -> float:
-        trend = 0.195 - 0.04 * day / self.n_days
+        trend = 0.195 - 0.04 * day / HORIZON_DAYS
         return round(float(trend + self.rng.normal(0, 0.006)), 3)
 
 
@@ -96,7 +100,7 @@ def _records(
 ) -> Iterator[str]:
     scale, phone = "Withings", "Health"
     n_days = (end - start).days + 1
-    body = _Body(rng, n_days)
+    body = _Body(rng)
     first = datetime.combine(start, datetime.min.time())
     yield _el(
         "Record",
@@ -171,7 +175,7 @@ def _records(
                 "creationDate": _t(rest),
                 "startDate": _t(midnight),
                 "endDate": _t(rest),
-                "value": int(rng.normal(58 - 4 * day / n_days, 2.5)),
+                "value": int(rng.normal(58 - 4 * day / HORIZON_DAYS, 2.5)),
             },
         )
         for i in range(noise_per_day):
@@ -225,12 +229,15 @@ def _workout(
 
 
 def _workouts(
-    rng: np.random.Generator, watch: str, sessions: list[Session], start: date, end: date
+    seed: int, watch: str, sessions: list[Session], start: date, end: date
 ) -> Iterator[str]:
+    # Independent streams so a longer export does not shift earlier random draws.
+    rng = np.random.default_rng(seed + 2)
     for s in sessions:
         if rng.random() < 0.85:  # the watch is not always worn
             minutes = (s.end - s.start).total_seconds() / 60
             yield _workout(STRENGTH, s.start, s.end, watch, minutes * rng.uniform(5, 7.5))
+    rng = np.random.default_rng(seed + 3)
     day = start
     while day <= end:
         if rng.random() < 0.8:
@@ -266,7 +273,7 @@ def write_apple_health_xml(
     for record in _records(rng, watch, start, end, noise_per_day):
         fh.write(record)
     in_range = [s for s in sessions if s.start.date() <= end]
-    for workout in _workouts(rng, watch, in_range, start, end):
+    for workout in _workouts(seed, watch, in_range, start, end):
         fh.write(workout)
     fh.write("</HealthData>\n")
 
