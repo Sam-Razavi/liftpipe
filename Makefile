@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 
-.PHONY: help setup lint format test synthetic
+.PHONY: help setup lint format test synthetic ingest
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -22,3 +22,6 @@ test: ## Run the Python test suite
 
 synthetic: ## Generate synthetic Hevy and Apple Health exports into data/synthetic
 	$(UV) run python -m liftpipe.synthetic --out data
+
+ingest: ## Load exports for LIFTPIPE_SOURCE (default synthetic) into DuckDB raw tables
+	$(UV) run python -m liftpipe.ingest
