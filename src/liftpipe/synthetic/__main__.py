@@ -27,6 +27,7 @@ def generate(
 ) -> list[Path]:
     settings = Settings(source="synthetic", data_dir=out_dir)
     start = end - timedelta(weeks=weeks) + timedelta(days=1)
+    start -= timedelta(days=start.weekday())  # training weeks run Monday to Sunday
     earlier = end - timedelta(weeks=4)
     sessions = generate_sessions(seed, start, end)
     written: list[Path] = []

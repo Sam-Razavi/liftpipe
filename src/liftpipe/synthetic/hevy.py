@@ -175,7 +175,7 @@ def generate_sessions(seed: int, start: date, end: date) -> list[Session]:
 
     for week in range(n_weeks):
         week_start = start + timedelta(weeks=week)
-        if rng.random() < 0.06:  # holiday, illness or a busy week
+        if rng.random() < 0.08:  # holiday, illness or a busy week
             lifter.detraining = min(lifter.detraining + 0.04, 0.12)
             continue
         lifter.detraining = max(lifter.detraining - 0.02, 0.0)
