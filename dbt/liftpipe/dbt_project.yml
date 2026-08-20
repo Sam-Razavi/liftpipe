@@ -1,0 +1,30 @@
+name: liftpipe
+version: "0.1.0"
+config-version: 2
+profile: liftpipe
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages", "logs"]
+
+models:
+  liftpipe:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+    marts:
+      +schema: marts
+      +materialized: table
+
+seeds:
+  liftpipe:
+    +schema: reference
+
+flags:
+  send_anonymous_usage_stats: false

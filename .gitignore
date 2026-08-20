@@ -20,3 +20,9 @@ data/raw/
 .DS_Store
 .idea/
 .vscode/
+
+# dbt
+dbt/liftpipe/target/
+dbt/liftpipe/dbt_packages/
+dbt/liftpipe/logs/
+dbt/liftpipe/.user.yml

@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"
 authors = [{ name = "Sam Sahbaei Razavi", email = "h24sasah@du.se" }]
 dependencies = [
+    "dbt-core>=1.12.5",
+    "dbt-duckdb>=1.11.0",
     "duckdb>=1.5.6",
     "faker>=40.43.0",
     "lxml>=6.1.3",

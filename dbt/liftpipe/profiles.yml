@@ -1,0 +1,8 @@
+liftpipe:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # Set by the Makefile and Dagster; defaults to the synthetic warehouse.
+      path: "{{ env_var('LIFTPIPE_WAREHOUSE', '../../data/warehouse/liftpipe_synthetic.duckdb') }}"
+      threads: 4

@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Validated rows loaded by the Python ingestion layer (one row per natural key).
+    schema: raw
+    tables:
+      - name: hevy_sets
+        description: One row per set from Hevy CSV exports, normalised to kg and km.
+        columns:
+          - name: set_id
+            description: Hash of workout_id, exercise position and set index.
+            data_tests: [unique, not_null]
+          - name: workout_id
+            description: Hash of the workout start time.
+            data_tests: [not_null]
+      - name: health_records
+        description: Body-measurement records from Apple Health exports.
+        columns:
+          - name: record_id
+            data_tests: [unique, not_null]
+      - name: health_workouts
+        description: Workouts recorded by Apple Health (watch or third-party apps).
+        columns:
+          - name: workout_id
+            data_tests: [unique, not_null]
