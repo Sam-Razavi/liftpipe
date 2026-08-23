@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: stg_hevy__sets
+    description: Typed Hevy sets; zero weights become null (bodyweight or cardio).
+    columns:
+      - name: set_id
+        data_tests: [unique, not_null]
+      - name: set_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [normal, warmup, failure, dropset]
+      - name: reps
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: weight_kg
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 500
+      - name: rpe
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 1
+                max_value: 10
+
+  - name: stg_hevy__workouts
+    description: One row per Hevy workout.
+    columns:
+      - name: workout_id
+        data_tests: [unique, not_null]
+      - name: duration_min
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 600
+
+  - name: stg_apple_health__body_measurements
+    description: Body measurements in long format with normalised units.
+    columns:
+      - name: record_id
+        data_tests: [unique, not_null]
+      - name: metric
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [body_mass_kg, lean_body_mass_kg, body_fat_pct, bmi, height_cm, waist_cm, resting_hr_bpm]
+
+  - name: stg_apple_health__workouts
+    description: Apple Health workouts with a readable activity name.
+    columns:
+      - name: workout_id
+        data_tests: [unique, not_null]
