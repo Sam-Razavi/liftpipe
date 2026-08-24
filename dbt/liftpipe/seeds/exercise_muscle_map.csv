@@ -1,0 +1,62 @@
+exercise_title,primary_muscle_group,secondary_muscle_group,equipment,movement_pattern
+Bench Press (Barbell),chest,triceps,barbell,horizontal_push
+Bench Press (Dumbbell),chest,triceps,dumbbell,horizontal_push
+Incline Bench Press (Barbell),chest,shoulders,barbell,horizontal_push
+Incline Bench Press (Dumbbell),chest,shoulders,dumbbell,horizontal_push
+Decline Bench Press (Barbell),chest,triceps,barbell,horizontal_push
+Chest Fly (Dumbbell),chest,,dumbbell,isolation
+Cable Fly Crossovers,chest,,cable,isolation
+Push Up,chest,triceps,bodyweight,horizontal_push
+Chest Dip,chest,triceps,bodyweight,vertical_push
+Overhead Press (Barbell),shoulders,triceps,barbell,vertical_push
+Overhead Press (Dumbbell),shoulders,triceps,dumbbell,vertical_push
+Seated Overhead Press (Dumbbell),shoulders,triceps,dumbbell,vertical_push
+Arnold Press (Dumbbell),shoulders,triceps,dumbbell,vertical_push
+Lateral Raise (Dumbbell),shoulders,,dumbbell,isolation
+Lateral Raise (Cable),shoulders,,cable,isolation
+Rear Delt Reverse Fly (Dumbbell),shoulders,back,dumbbell,isolation
+Face Pull,shoulders,back,cable,horizontal_pull
+Triceps Pushdown,triceps,,cable,isolation
+Triceps Rope Pushdown,triceps,,cable,isolation
+Skullcrusher (Barbell),triceps,,barbell,isolation
+Overhead Triceps Extension (Cable),triceps,,cable,isolation
+Triceps Dip,triceps,chest,bodyweight,vertical_push
+Deadlift (Barbell),back,hamstrings,barbell,hinge
+Pull Up,back,biceps,bodyweight,vertical_pull
+Chin Up,back,biceps,bodyweight,vertical_pull
+Lat Pulldown (Cable),back,biceps,cable,vertical_pull
+Bent Over Row (Barbell),back,biceps,barbell,horizontal_pull
+Dumbbell Row,back,biceps,dumbbell,horizontal_pull
+Seated Cable Row - V Grip (Cable),back,biceps,cable,horizontal_pull
+T Bar Row,back,biceps,machine,horizontal_pull
+Shrug (Barbell),back,,barbell,isolation
+Bicep Curl (Barbell),biceps,,barbell,isolation
+Bicep Curl (Dumbbell),biceps,,dumbbell,isolation
+Bicep Curl (Cable),biceps,,cable,isolation
+Hammer Curl (Dumbbell),biceps,,dumbbell,isolation
+Preacher Curl (Barbell),biceps,,barbell,isolation
+Squat (Barbell),quadriceps,glutes,barbell,squat
+Front Squat (Barbell),quadriceps,glutes,barbell,squat
+Goblet Squat,quadriceps,glutes,dumbbell,squat
+Bulgarian Split Squat,quadriceps,glutes,dumbbell,lunge
+Lunge (Dumbbell),quadriceps,glutes,dumbbell,lunge
+Leg Press (Machine),quadriceps,glutes,machine,squat
+Leg Extension (Machine),quadriceps,,machine,isolation
+Hack Squat (Machine),quadriceps,glutes,machine,squat
+Romanian Deadlift (Barbell),hamstrings,glutes,barbell,hinge
+Romanian Deadlift (Dumbbell),hamstrings,glutes,dumbbell,hinge
+Lying Leg Curl (Machine),hamstrings,,machine,isolation
+Seated Leg Curl (Machine),hamstrings,,machine,isolation
+Hip Thrust (Barbell),glutes,hamstrings,barbell,hinge
+Glute Bridge,glutes,hamstrings,bodyweight,hinge
+Standing Calf Raise (Machine),calves,,machine,isolation
+Seated Calf Raise,calves,,machine,isolation
+Plank,core,,bodyweight,isometric
+Crunch,core,,bodyweight,isolation
+Hanging Leg Raise,core,,bodyweight,isolation
+Cable Crunch,core,,cable,isolation
+Russian Twist,core,,bodyweight,isolation
+Treadmill,cardio,,machine,cardio
+Rowing Machine,cardio,back,machine,cardio
+Cycling,cardio,,machine,cardio
+Elliptical Trainer,cardio,,machine,cardio

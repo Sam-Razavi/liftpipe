@@ -1,0 +1,25 @@
+version: 2
+
+seeds:
+  - name: exercise_muscle_map
+    description: >
+      Maps Hevy exercise titles to muscle groups. Hevy's CSV export carries no muscle
+      information, so this reference table is maintained by hand. Unmapped exercises fall
+      into 'other' and are reported by a warning-level test.
+    config:
+      column_types:
+        secondary_muscle_group: varchar
+    columns:
+      - name: exercise_title
+        data_tests: [unique, not_null]
+      - name: primary_muscle_group
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: &muscle_groups [chest, back, shoulders, biceps, triceps, quadriceps, hamstrings, glutes, calves, core, cardio]
+      - name: secondary_muscle_group
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: *muscle_groups
