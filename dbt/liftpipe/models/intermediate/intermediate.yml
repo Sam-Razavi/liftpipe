@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: int_sets_enriched
+    description: Sets joined to the muscle map, with volume and Epley e1RM for working sets.
+    columns:
+      - name: set_id
+        data_tests: [unique, not_null]
+      - name: primary_muscle_group
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [chest, back, shoulders, biceps, triceps, quadriceps, hamstrings, glutes, calves, core, cardio, other]
+      - name: estimated_1rm_kg
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 700
+
+  - name: int_body_daily
+    description: Latest reading per metric and day.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [metric, measured_on]
