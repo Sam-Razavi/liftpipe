@@ -1,0 +1,37 @@
+version: 2
+
+unit_tests:
+  - name: epley_and_volume_apply_to_working_sets_only
+    description: Warm-ups get no volume or e1RM; e1RM needs a load and 1-12 reps.
+    model: int_sets_enriched
+    given:
+      - input: ref('stg_hevy__sets')
+        rows:
+          - {set_id: a, exercise_title: Bench Press (Barbell), is_warmup: true, weight_kg: 60, reps: 5, workout_date: 2026-01-05}
+          - {set_id: b, exercise_title: Bench Press (Barbell), is_warmup: false, weight_kg: 100, reps: 5, workout_date: 2026-01-05}
+          - {set_id: c, exercise_title: Bench Press (Barbell), is_warmup: false, weight_kg: 120, reps: 1, workout_date: 2026-01-05}
+          - {set_id: d, exercise_title: Bench Press (Barbell), is_warmup: false, weight_kg: 50, reps: 20, workout_date: 2026-01-05}
+          - {set_id: e, exercise_title: My Custom Move, is_warmup: false, weight_kg: null, reps: 12, workout_date: 2026-01-07}
+      - input: ref('exercise_muscle_map')
+        rows:
+          - {exercise_title: Bench Press (Barbell), primary_muscle_group: chest, secondary_muscle_group: triceps, equipment: barbell}
+    expect:
+      rows:
+        - {set_id: a, volume_kg: null, estimated_1rm_kg: null, primary_muscle_group: chest, week_start: 2026-01-05}
+        - {set_id: b, volume_kg: 500, estimated_1rm_kg: 116.67, primary_muscle_group: chest, week_start: 2026-01-05}
+        - {set_id: c, volume_kg: 120, estimated_1rm_kg: 120, primary_muscle_group: chest, week_start: 2026-01-05}
+        - {set_id: d, volume_kg: 1000, estimated_1rm_kg: null, primary_muscle_group: chest, week_start: 2026-01-05}
+        - {set_id: e, volume_kg: null, estimated_1rm_kg: null, primary_muscle_group: other, week_start: 2026-01-05}
+
+  - name: body_daily_keeps_latest_reading
+    model: int_body_daily
+    given:
+      - input: ref('stg_apple_health__body_measurements')
+        rows:
+          - {metric: body_mass_kg, measured_on: 2026-01-05, measured_at: "2026-01-05 07:00:00", value: 80.0, source_name: Withings}
+          - {metric: body_mass_kg, measured_on: 2026-01-05, measured_at: "2026-01-05 21:00:00", value: 81.2, source_name: Health}
+          - {metric: body_mass_kg, measured_on: 2026-01-06, measured_at: "2026-01-06 07:00:00", value: 79.8, source_name: Withings}
+    expect:
+      rows:
+        - {measured_on: 2026-01-05, value: 81.2, readings_that_day: 2}
+        - {measured_on: 2026-01-06, value: 79.8, readings_that_day: 1}
