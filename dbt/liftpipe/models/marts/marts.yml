@@ -1,0 +1,170 @@
+version: 2
+
+models:
+  - name: dim_exercise
+    description: One row per exercise performed, with muscle groups from the seed.
+    columns:
+      - name: exercise_id
+        data_tests: [unique, not_null]
+      - name: exercise_title
+        data_tests: [unique, not_null]
+      - name: primary_muscle_group
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [chest, back, shoulders, biceps, triceps, quadriceps, hamstrings, glutes, calves, core, cardio, other]
+
+  - name: fct_sets
+    description: Incremental fact table at set grain.
+    columns:
+      - name: set_id
+        data_tests: [unique, not_null]
+      - name: workout_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_workouts')
+                field: workout_id
+      - name: exercise_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_exercise')
+                field: exercise_id
+      - name: set_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [normal, warmup, failure, dropset]
+      - name: reps
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+      - name: weight_kg
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 500
+      - name: estimated_1rm_kg
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 700
+
+  - name: fct_workouts
+    description: One row per session across Hevy and Apple Health, de-duplicated.
+    columns:
+      - name: workout_id
+        data_tests: [unique, not_null]
+      - name: source
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [hevy, apple_health]
+      - name: workout_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [strength, cardio]
+      - name: duration_min
+        data_tests:
+          - not_null
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 600
+
+  - name: mart_weekly_muscle_volume
+    description: Weekly working sets, fractional sets and volume per muscle group.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [week_start, muscle_group]
+    columns:
+      - name: working_sets
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+      - name: volume_kg
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+
+  - name: mart_exercise_e1rm
+    description: Daily best e1RM per exercise with a 28-day rolling best and trend.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [exercise_id, workout_date]
+    columns:
+      - name: best_e1rm_kg
+        data_tests:
+          - not_null
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 700
+      - name: overload_trend
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [progressing, plateau, regressing, insufficient_history]
+
+  - name: mart_pr_history
+    description: Personal records per exercise and record type.
+    columns:
+      - name: pr_id
+        data_tests: [unique, not_null]
+      - name: pr_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [e1rm, heaviest_weight, most_reps]
+      - name: improvement
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 500
+
+  - name: mart_body_trends
+    description: Daily body metrics with 7-day rolling averages on a continuous calendar.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [metric, measured_on]
+    columns:
+      - name: metric
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [body_mass_kg, body_fat_pct, lean_body_mass_kg, resting_hr_bpm]
+      - name: value
+        description: Null on days without a reading.
+      - name: rolling_7d_avg
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 250
+
+  - name: mart_training_consistency
+    description: Weekly session counts, active days, streaks and rolling frequency.
+    columns:
+      - name: week_start
+        data_tests: [unique, not_null]
+      - name: active_days
+        data_tests:
+          - accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 7
