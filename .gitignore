@@ -26,3 +26,4 @@ dbt/liftpipe/target/
 dbt/liftpipe/dbt_packages/
 dbt/liftpipe/logs/
 dbt/liftpipe/.user.yml
+.dagster/
