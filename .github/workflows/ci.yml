@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pipeline:
+    name: Lint, test and build (synthetic data)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Lint
+        run: make lint
+
+      - name: Unit and integration tests
+        run: make test
+
+      - name: Generate synthetic data and run the pipeline with Dagster
+        run: make demo
+
+      - name: Generate dbt docs
+        run: uv run dbt docs generate --project-dir dbt/liftpipe --profiles-dir dbt/liftpipe
+        env:
+          LIFTPIPE_WAREHOUSE: ${{ github.workspace }}/data/warehouse/liftpipe_synthetic.duckdb
+
+      - name: Upload marts and dbt docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: liftpipe-build
+          path: |
+            dashboard/public/data/
+            dbt/liftpipe/target/index.html
+            dbt/liftpipe/target/manifest.json
+            dbt/liftpipe/target/catalog.json
+          retention-days: 14
