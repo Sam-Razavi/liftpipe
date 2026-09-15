@@ -1,0 +1,13 @@
+{
+  "tables": {
+    "dim_exercise": 19,
+    "fct_workouts": 339,
+    "mart_weekly_muscle_volume": 736,
+    "mart_exercise_e1rm": 1262,
+    "mart_pr_history": 233,
+    "mart_body_trends": 2199,
+    "mart_training_consistency": 79
+  },
+  "first_workout": "2025-01-27",
+  "last_workout": "2026-07-31"
+}
