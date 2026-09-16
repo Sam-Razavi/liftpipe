@@ -9,13 +9,14 @@ DBT := $(UV) run dbt
 export DAGSTER_HOME := $(CURDIR)/.dagster
 DAGSTER_MODULE := liftpipe.orchestration.definitions
 
-.PHONY: help setup lint format test synthetic ingest dbt export dbt-parse dagster pipeline demo real clean
+.PHONY: help setup lint format test synthetic ingest dbt export dbt-parse dagster pipeline demo real clean dashboard dashboard-build
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
 
-setup: ## Install Python dependencies
+setup: ## Install Python and dashboard dependencies
 	$(UV) sync
+	cd dashboard && npm ci
 
 lint: ## Run ruff lint and format checks
 	$(UV) run ruff check .
@@ -58,3 +59,9 @@ real: ## Run the pipeline on your own exports in data/real (never committed)
 
 clean: ## Remove generated data, warehouse and dbt artefacts
 	rm -rf data/synthetic data/raw data/warehouse dbt/liftpipe/target dbt/liftpipe/logs .dagster
+
+dashboard: ## Serve the dashboard locally at http://localhost:5173
+	cd dashboard && npm run dev
+
+dashboard-build: ## Typecheck and build the static dashboard into dashboard/dist
+	cd dashboard && npm run build

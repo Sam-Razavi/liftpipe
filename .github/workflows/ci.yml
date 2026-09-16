@@ -48,3 +48,23 @@ jobs:
             dbt/liftpipe/target/manifest.json
             dbt/liftpipe/target/catalog.json
           retention-days: 14
+
+  dashboard:
+    name: Typecheck and build dashboard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
