@@ -201,7 +201,7 @@ tests/             pytest suite
 
 ## Roadmap
 
-* **Phase 2: upload your own CSV.** A thin FastAPI service on Railway: `POST /upload` accepts a Hevy CSV, runs the existing `read_hevy_csv` and dbt build against a per-request temporary DuckDB file, and returns the mart Parquet files for the same dashboard to render. Ingestion and export are already plain library functions, so the service is a wrapper rather than a rewrite.
+* **Phase 2: upload your own CSV.** A thin FastAPI service on Railway: `POST /upload` accepts a Hevy CSV, runs the existing `read_hevy_csv` and dbt build against a per-request temporary DuckDB file, and returns the mart Parquet files for the same dashboard to render. Ingestion and export are already plain library functions, so the service is a wrapper rather than a rewrite. Design: [docs/phase-2-upload-api.md](docs/phase-2-upload-api.md).
 * Hevy API connector as an optional second `WorkoutSource`.
 
 ## Limitations
