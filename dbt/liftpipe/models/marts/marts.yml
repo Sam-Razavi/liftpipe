@@ -19,8 +19,10 @@ models:
     description: Incremental fact table at set grain.
     columns:
       - name: set_id
+        description: Natural key; hash of workout, exercise position and set index.
         data_tests: [unique, not_null]
       - name: workout_id
+        description: Hash of the workout start time.
         data_tests:
           - not_null
           - relationships:
@@ -51,7 +53,10 @@ models:
               arguments:
                 min_value: 0
                 max_value: 500
+      - name: volume_kg
+        description: Weight times reps for working sets; null for warm-ups and unloaded sets.
       - name: estimated_1rm_kg
+        description: Epley e1RM for working sets of 1-12 reps with a load.
         data_tests:
           - accepted_range:
               arguments:
@@ -64,6 +69,7 @@ models:
       - name: workout_id
         data_tests: [unique, not_null]
       - name: source
+        description: hevy, or apple_health for watch workouts with no matching Hevy session.
         data_tests:
           - accepted_values:
               arguments:
@@ -73,6 +79,10 @@ models:
           - accepted_values:
               arguments:
                 values: [strength, cardio]
+      - name: energy_kcal
+        description: Active energy from the Apple Watch workout recorded alongside the session.
+      - name: has_watch_data
+        description: True when an Apple Health workout was matched (start within 30 minutes).
       - name: duration_min
         data_tests:
           - not_null
@@ -89,10 +99,13 @@ models:
             columns: [week_start, muscle_group]
     columns:
       - name: working_sets
+        description: Non-warm-up sets where this is the exercise's primary muscle.
         data_tests:
           - accepted_range:
               arguments:
                 min_value: 0
+      - name: fractional_sets
+        description: Working sets plus half a set for each set where this is the secondary muscle.
       - name: volume_kg
         data_tests:
           - accepted_range:
@@ -113,7 +126,12 @@ models:
               arguments:
                 min_value: 0
                 max_value: 700
+      - name: rolling_28d_best_e1rm_kg
+        description: Best e1RM in the 28 days up to and including this session.
+      - name: pct_change_28d
+        description: Change of the rolling best against the rolling best 28 days earlier.
       - name: overload_trend
+        description: progressing at +2.5 % or more, regressing at -2.5 % or less, else plateau.
         data_tests:
           - accepted_values:
               arguments:
@@ -129,7 +147,10 @@ models:
           - accepted_values:
               arguments:
                 values: [e1rm, heaviest_weight, most_reps]
+      - name: is_first_record
+        description: The first time the exercise was logged; a baseline rather than a beaten record.
       - name: improvement
+        description: Gain over the previous best, in kg or reps.
         data_tests:
           - accepted_range:
               arguments:
@@ -150,7 +171,10 @@ models:
                 values: [body_mass_kg, body_fat_pct, lean_body_mass_kg, resting_hr_bpm]
       - name: value
         description: Null on days without a reading.
+      - name: rolling_avg_change_28d
+        description: Change in the 7-day average over the past 28 days.
       - name: rolling_7d_avg
+        description: Mean of the readings in the trailing seven calendar days.
         data_tests:
           - accepted_range:
               arguments:
@@ -162,6 +186,8 @@ models:
     columns:
       - name: week_start
         data_tests: [unique, not_null]
+      - name: streak_weeks
+        description: Consecutive weeks up to this one with at least one strength session.
       - name: active_days
         data_tests:
           - accepted_range:
