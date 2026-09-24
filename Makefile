@@ -36,6 +36,7 @@ ingest: ## Load exports for LIFTPIPE_SOURCE (default synthetic) into DuckDB raw 
 	$(UV) run python -m liftpipe.ingest
 
 dbt: ## Build and test all dbt models (seed, run, test)
+	@mkdir -p $(dir $(LIFTPIPE_WAREHOUSE))
 	$(DBT) build
 
 export: ## Export marts to dashboard/public/data as Parquet
