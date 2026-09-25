@@ -28,6 +28,7 @@ function Tile({ label, value, unit, delta }: { label: string; value: string; uni
 
 export function Kpis() {
   const state = useQuery<Row>(KPIS);
+  if (state.status === "error") return null;
   if (state.status !== "ready") return <div className="kpis" aria-busy="true" style={{ minHeight: 98 }} />;
   const k = state.rows[0];
   return (

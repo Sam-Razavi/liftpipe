@@ -29,6 +29,13 @@ export function App() {
         </span>
       </header>
 
+      {meta.status === "error" && (
+        <div className="banner" role="alert">
+          The analytics engine could not start in this browser ({meta.error}). DuckDB-WASM needs a
+          recent version of Chrome, Edge, Firefox or Safari.
+        </div>
+      )}
+
       <Kpis />
 
       <div className="grid">
