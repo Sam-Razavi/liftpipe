@@ -8,6 +8,8 @@ A free-to-run data pipeline for strength training. It ingests Hevy workout expor
 
 The pipeline is the product. There is no logging UI: you keep training in Hevy and export when you like.
 
+![liftpipe dashboard: KPI tiles, e1RM trend, recent PRs, weekly sets per muscle group, body measurements and training calendar](docs/dashboard.png)
+
 ## What it shows
 
 | Question | Mart |
