@@ -77,7 +77,8 @@ def already_ingested(con: duckdb.DuckDBPyConnection, sha256: str, table: str) ->
     return row is not None
 
 
-def _create_table(con: duckdb.DuckDBPyConnection, table: str, schema: pl.Schema) -> None:
+def create_table(con: duckdb.DuckDBPyConnection, table: str, schema: pl.Schema) -> None:
+    """Create ``raw.<table>`` from a Polars schema if it does not exist."""
     columns = [f'"{name}" {_DUCKDB_TYPES[type(dtype)]}' for name, dtype in schema.items()]
     columns.append('"_loaded_at" TIMESTAMP NOT NULL')
     key = PRIMARY_KEYS[table]
@@ -100,7 +101,7 @@ def persist(
     batch.parent.mkdir(parents=True, exist_ok=True)
     frame.write_parquet(batch)
 
-    _create_table(con, table, frame.schema)
+    create_table(con, table, frame.schema)
     now = datetime.now(UTC).replace(tzinfo=None)
     before = con.execute(f"SELECT count(*) FROM raw.{table}").fetchone()[0]  # type: ignore[index]
     con.execute("BEGIN TRANSACTION")
