@@ -803,9 +803,6 @@ name = "liftpipe"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "dagster" },
-    { name = "dagster-dbt" },
-    { name = "dagster-webserver" },
     { name = "dbt-core" },
     { name = "dbt-duckdb" },
     { name = "duckdb" },
@@ -826,12 +823,14 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
+orchestration = [
+    { name = "dagster" },
+    { name = "dagster-dbt" },
+    { name = "dagster-webserver" },
+]
 
 [package.metadata]
 requires-dist = [
-    { name = "dagster", specifier = ">=1.13.26" },
-    { name = "dagster-dbt", specifier = ">=0.29.26" },
-    { name = "dagster-webserver", specifier = ">=1.13.26" },
     { name = "dbt-core", specifier = ">=1.12.5" },
     { name = "dbt-duckdb", specifier = ">=1.11.0" },
     { name = "duckdb", specifier = ">=1.5.6" },
@@ -851,6 +850,11 @@ dev = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = ">=0.17.0" },
+]
+orchestration = [
+    { name = "dagster", specifier = ">=1.13.26" },
+    { name = "dagster-dbt", specifier = ">=0.29.26" },
+    { name = "dagster-webserver", specifier = ">=1.13.26" },
 ]
 
 [[package]]
