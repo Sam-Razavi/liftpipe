@@ -57,8 +57,9 @@ The dashboard already reads Parquet buffers, so the only front-end change is a f
 
 ## Deploying
 
-1. **Railway:** new project from the GitHub repository. `railway.json` selects the `Dockerfile` and the `/healthz` check. Set `LIFTPIPE_CORS_ORIGINS` to the Vercel URL (for example `https://liftpipe.vercel.app`). A 1 GB memory plan is comfortable; the image excludes Dagster and is about 600 MB of dependencies.
-2. **Vercel:** add the environment variable `VITE_API_URL` (the Railway URL, no trailing slash) to the dashboard project and redeploy. Without it the upload panel is hidden and the page behaves exactly as the static demo.
+**Railway (done).** Project `liftpipe-api`, service `api`, built from this repository's `Dockerfile` on every push to `main`; `railway.json` supplies the `/healthz` check. Live at `https://api-production-76cc.up.railway.app`. Variables: `LIFTPIPE_CORS_ORIGINS=https://liftpipe.vercel.app,http://localhost:5173`, `LIFTPIPE_TRUST_PROXY=1`, `LIFTPIPE_MAX_UPLOAD_MB=10`, `LIFTPIPE_RATE_LIMIT_PER_HOUR=10`. Railway injects `PORT` (8080 here), which the image honours. Leave the domain's target port on its default, because pinning it to 8000 makes the proxy return 502. A 1 GB plan is comfortable; the image excludes Dagster.
+
+**Vercel.** Import the repository with Root Directory `dashboard`. Production builds read `dashboard/.env.production`, which already points at the Railway URL, so no environment variable is needed. If Vercel assigns a hostname other than `liftpipe.vercel.app`, add that origin to `LIFTPIPE_CORS_ORIGINS` on Railway, or uploads will fail with a CORS error. To hide uploads, delete the line in `.env.production`.
 
 ## Testing
 

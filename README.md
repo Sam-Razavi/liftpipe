@@ -4,7 +4,7 @@
 
 A free-to-run data pipeline for strength training. It ingests Hevy workout exports and Apple Health body data, models them with dbt on DuckDB, orchestrates everything with Dagster, and serves a static dashboard that queries the marts in the browser with DuckDB-WASM.
 
-**Live demo:** https://liftpipe.vercel.app (synthetic data, no personal information). When the upload API is deployed, visitors can also upload their own Hevy CSV and see their dashboard; see [Upload API](#upload-api).
+**Live demo:** https://liftpipe.vercel.app (synthetic data, no personal information). Visitors can also upload their own Hevy CSV and see their dashboard, served by the [upload API](#upload-api) on Railway (`https://api-production-76cc.up.railway.app`).
 
 The pipeline is the product. There is no logging UI: you keep training in Hevy and export when you like.
 
