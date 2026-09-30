@@ -4,7 +4,7 @@
 
 A free-to-run data pipeline for strength training. It ingests Hevy workout exports and Apple Health body data, models them with dbt on DuckDB, orchestrates everything with Dagster, and serves a static dashboard that queries the marts in the browser with DuckDB-WASM.
 
-**Live demo:** https://liftpipe.vercel.app (synthetic data, no personal information)
+**Live demo:** https://liftpipe.vercel.app (synthetic data, no personal information). When the upload API is deployed, visitors can also upload their own Hevy CSV and see their dashboard; see [Upload API](#upload-api).
 
 The pipeline is the product. There is no logging UI: you keep training in Hevy and export when you like.
 
@@ -141,7 +141,7 @@ make demo    # synthetic exports -> Dagster run (ingest, dbt build, export)
 make dashboard   # http://localhost:5173
 ```
 
-`make dagster` opens the Dagster UI at http://localhost:3000 with the full asset graph, a `refresh_all` job, a nightly schedule and a sensor that triggers on new export files (both off by default).
+`make api` serves the [upload API](#upload-api) at http://localhost:8000. `make dagster` opens the Dagster UI at http://localhost:3000 with the full asset graph, a `refresh_all` job, a nightly schedule and a sensor that triggers on new export files (both off by default).
 
 ### Running on your own data
 
@@ -160,8 +160,22 @@ make dashboard   # http://localhost:5173
 | `make ingest` / `make dbt` / `make export` | Run one stage on its own |
 | `make test` / `make lint` | pytest; ruff lint and format checks |
 | `make dagster` | Dagster UI |
+| `make api` | Upload API with interactive docs at `/docs` |
 | `make dashboard` / `make dashboard-build` | Vite dev server; production build |
 | `make clean` | Remove generated data, warehouse and dbt artefacts |
+
+## Upload API
+
+A small FastAPI service turns an uploaded Hevy CSV into the same mart Parquet files the demo uses, so a visitor can see their own dashboard without an account.
+
+```bash
+make api
+curl -F "file=@workouts.csv" localhost:8000/v1/dashboards -o dashboard.zip
+```
+
+It reuses the batch pipeline rather than reimplementing it: `read_hevy_csv`, Pandera, the raw store, the unchanged dbt project and `export_marts`, run against a throwaway DuckDB file. Uploads are held in a temporary folder deleted before the response is sent, never logged and never persisted. Limits: 10 MB per file, 10 builds per client per hour, one concurrent build per worker. A 5,800-set export (18 months) takes about 6.5 s, almost all of it `dbt build`; the dbt parse is done once at start-up. Errors are specific: `400` for a file that is not a Hevy export (with the failing row), `413` too large, `422` for data that fails a quality check, `429` over quota.
+
+The dashboard shows an upload panel when `VITE_API_URL` is set, unzips the response in the browser with fflate and swaps the Parquet files into DuckDB-WASM. Design notes, configuration and deployment steps: [docs/phase-2-upload-api.md](docs/phase-2-upload-api.md).
 
 ## Design decisions
 
@@ -181,9 +195,9 @@ make dashboard   # http://localhost:5173
 
 ## Testing and CI
 
-* **pytest (38 tests):** generator determinism and format fidelity, Hevy parsing (units, timestamps, invalid rows), Apple Health parsing (zip input, legacy and iOS 16+ workout statistics, bounded memory), idempotent loads, Dagster lineage and sensor, and an end-to-end ingest → dbt build → export test that reconciles marts with raw counts.
+* **pytest (49 tests):** the upload API (valid, invalid, oversize, rate-limited and cross-origin requests), generator determinism and format fidelity, Hevy parsing (units, timestamps, invalid rows), Apple Health parsing (zip input, legacy and iOS 16+ workout statistics, bounded memory), idempotent loads, Dagster lineage and sensor, and an end-to-end ingest → dbt build → export test that reconciles marts with raw counts.
 * **dbt (75 data tests, 2 unit tests):** generic `unique`, `not_null`, `relationships`, `accepted_values`, plus project tests `accepted_range` and `unique_combination`; singular tests for plausible body metrics, e1RM never below the lifted weight, and a warning when unmapped exercises exceed 10 % of sets. Unit tests pin the Epley maths and the latest-reading rule.
-* **GitHub Actions:** ruff, pytest, `make demo` on synthetic data, dbt docs as an artefact, and a typecheck and build of the dashboard.
+* **GitHub Actions:** ruff, pytest, `make demo` on synthetic data, a build of the API container with a real upload against it, dbt docs as an artefact, and a typecheck and build of the dashboard.
 
 Real data never enters the repository. CI and the live demo use `python -m liftpipe.synthetic`, which writes 78 weeks of push/pull/legs training with progressive overload, deloads, missed weeks and warm-ups, plus Apple Health body data with a slow recomposition trend, in the exact export formats.
 
@@ -195,19 +209,23 @@ src/liftpipe/
   ingest/          readers, natural keys, Parquet and DuckDB raw store
   quality/         Pandera schemas
   orchestration/   Dagster assets, dbt integration, job, schedule, sensor
+  api/             FastAPI upload service (Phase 2)
   export.py        marts -> dashboard/public/data/*.parquet
 dbt/liftpipe/      staging, intermediate and marts models, seed, tests, macros
 dashboard/         React, TypeScript, Vite, Recharts, DuckDB-WASM
 tests/             pytest suite
+Dockerfile         Upload API image (Railway)
 ```
 
 ## Roadmap
 
-* **Phase 2: upload your own CSV.** A thin FastAPI service on Railway: `POST /upload` accepts a Hevy CSV, runs the existing `read_hevy_csv` and dbt build against a per-request temporary DuckDB file, and returns the mart Parquet files for the same dashboard to render. Ingestion and export are already plain library functions, so the service is a wrapper rather than a rewrite. Design: [docs/phase-2-upload-api.md](docs/phase-2-upload-api.md).
-* Hevy API connector as an optional second `WorkoutSource`.
+* Hevy API connector as an optional second `WorkoutSource` (the API is Pro-only and still v0.0.1).
+* Apple Health uploads, if a lightweight way to accept multi-gigabyte exports emerges.
 
 ## Limitations
 
 * Workouts deleted in Hevy stay in the warehouse, because exports carry no deletion markers. Rebuild from the latest export to drop them.
 * Muscle groups come from a hand-maintained seed. Custom exercises fall into `other` until added to `dbt/liftpipe/seeds/exercise_muscle_map.csv`.
+* Uploads cover Hevy only, so body measurements show no data in upload mode.
+* The rate limiter is in memory, so quotas are per process and reset on restart.
 * Epley overestimates 1RM for high-rep sets, so e1RM uses sets of 1-12 reps only.
