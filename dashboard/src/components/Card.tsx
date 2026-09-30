@@ -28,10 +28,12 @@ export function Card({ title, subtitle, controls, className = "", children }: Pr
 export function Loadable<T>({
   state,
   height = 260,
+  empty = "No data yet.",
   children,
 }: {
   state: QueryState<T>;
   height?: number;
+  empty?: ReactNode;
   children: (rows: T[]) => ReactNode;
 }) {
   if (state.status === "loading")
@@ -39,7 +41,7 @@ export function Loadable<T>({
   if (state.status === "error")
     return <div className="state" role="alert" style={{ minHeight: height }}>Query failed: {state.error}</div>;
   if (state.rows.length === 0)
-    return <div className="state" style={{ minHeight: height }}>No data yet.</div>;
+    return <div className="state" style={{ minHeight: height }}>{empty}</div>;
   return <>{children(state.rows)}</>;
 }
 

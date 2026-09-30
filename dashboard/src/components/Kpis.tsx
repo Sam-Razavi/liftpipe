@@ -41,12 +41,16 @@ export function Kpis() {
       <Tile label="Volume, last 4 weeks" value={fmtNum(k.tonnes_28d)} unit="t" delta="Working sets, kg × reps" />
       <Tile label="Current streak" value={String(k.current_streak)} unit="weeks" delta={`Longest: ${k.longest_streak} weeks`} />
       <Tile label="PRs, last 4 weeks" value={String(k.prs_28d)} delta="e1RM, load or reps" />
-      <Tile
-        label="Body weight, 7-day avg"
-        value={fmtNum(k.weight_avg)}
-        unit="kg"
-        delta={`${fmtSigned(k.weight_change_28d)} kg over 28 days`}
-      />
+      {k.weight_avg === null ? (
+        <Tile label="Body weight, 7-day avg" value="–" delta="Needs Apple Health data" />
+      ) : (
+        <Tile
+          label="Body weight, 7-day avg"
+          value={fmtNum(k.weight_avg)}
+          unit="kg"
+          delta={`${fmtSigned(k.weight_change_28d)} kg over 28 days`}
+        />
+      )}
     </div>
   );
 }

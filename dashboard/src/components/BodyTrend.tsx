@@ -40,7 +40,11 @@ export function BodyTrend() {
         <span><i className="swatch" style={{ background: c["series-2"] }} />7-day average</span>
         <span><i className="swatch dot" style={{ background: c["text-muted"] }} />Daily reading</span>
       </div>
-      <Loadable state={state} height={260}>
+      <Loadable
+        state={state}
+        height={260}
+        empty="No measurements in this dataset. They come from Apple Health, which uploads do not include."
+      >
         {(rows) => (
           <>
             <ResponsiveContainer width="100%" height={260}>
