@@ -20,6 +20,31 @@ The pipeline is the product. There is no logging UI: you keep training in Hevy a
 | What is my weight and body-fat trend once daily noise is smoothed? | `mart_body_trends` |
 | How consistently do I train, and how long is my streak? | `mart_training_consistency` |
 
+## Screenshots
+
+All taken from the [live demo](https://liftpipe.vercel.app), which runs on synthetic data.
+
+**Dark mode.** The palette is defined as design tokens, with its own dark steps rather than an automatic inversion; it follows the system setting.
+
+![Dashboard in dark mode](docs/screenshots/dashboard-dark.png)
+
+**Bring your own data.** After uploading a Hevy CSV (here an imperial-unit export, converted to kilograms on ingestion) the same page shows the visitor's own history. Body weight reads "Needs Apple Health data" because uploads cover Hevy only.
+
+![Dashboard after uploading a Hevy export](docs/screenshots/dashboard-upload.png)
+
+**Phone and detail.** The layout works at 390 px wide with no horizontal scrolling. Charts have hover tooltips and a "Show data" table underneath for exact values.
+
+<table>
+  <tr>
+    <td valign="top"><img src="docs/screenshots/dashboard-mobile.png" alt="Dashboard on a phone" width="300"></td>
+    <td valign="top"><img src="docs/screenshots/e1rm-tooltip.png" alt="Estimated one-rep max chart with a tooltip" width="560"></td>
+  </tr>
+</table>
+
+**Lineage in dbt.** The generated dbt docs trace a mart back to its source: `raw.hevy_sets` is staged, joined to the muscle-group seed, then flows through the set fact table to `mart_exercise_e1rm`.
+
+![dbt lineage graph for mart_exercise_e1rm](docs/screenshots/dbt-lineage.png)
+
 ## Architecture
 
 ```mermaid
