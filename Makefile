@@ -9,7 +9,7 @@ DBT := $(UV) run dbt
 export DAGSTER_HOME := $(CURDIR)/.dagster
 DAGSTER_MODULE := liftpipe.orchestration.definitions
 
-.PHONY: help setup lint format test synthetic ingest dbt export dbt-parse dagster pipeline demo real clean dashboard dashboard-build
+.PHONY: help setup lint format test synthetic ingest dbt export dbt-parse dagster pipeline demo real clean dashboard dashboard-build api
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-12s %s\n", $$1, $$2}'
@@ -66,3 +66,6 @@ dashboard: ## Serve the dashboard locally at http://localhost:5173
 
 dashboard-build: ## Typecheck and build the static dashboard into dashboard/dist
 	cd dashboard && npm run build
+
+api: dbt-parse ## Serve the upload API at http://localhost:8000 (docs at /docs)
+	$(UV) run uvicorn liftpipe.api.app:app --reload --port 8000

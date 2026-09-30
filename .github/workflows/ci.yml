@@ -33,6 +33,20 @@ jobs:
       - name: Generate synthetic data and run the pipeline with Dagster
         run: make demo
 
+      - name: Build the API image and upload a synthetic export to it
+        run: |
+          docker build -t liftpipe-api .
+          docker run -d --name liftpipe-api -p 8000:8000 liftpipe-api
+          for i in $(seq 1 90); do curl -sf localhost:8000/healthz >/dev/null && break; sleep 1; done
+          CSV=$(ls data/synthetic/hevy/*.csv | tail -1)
+          curl -sf --max-time 120 -F "file=@$CSV" -o dashboard.zip localhost:8000/v1/dashboards
+          unzip -l dashboard.zip
+          unzip -l dashboard.zip | grep -q meta.json
+
+      - name: API container logs
+        if: failure()
+        run: docker logs liftpipe-api || true
+
       - name: Generate dbt docs
         run: uv run dbt docs generate --project-dir dbt/liftpipe --profiles-dir dbt/liftpipe
         env:
