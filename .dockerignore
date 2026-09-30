@@ -1,0 +1,14 @@
+.git
+.venv
+.github
+.dagster
+data
+dashboard
+docs
+tests
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+dbt/liftpipe/target
+dbt/liftpipe/logs
